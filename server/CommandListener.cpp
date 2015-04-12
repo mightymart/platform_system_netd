@@ -135,6 +135,7 @@ static const char* FILTER_OUTPUT[] = {
 };
 
 static const char* RAW_PREROUTING[] = {
+        "cfw_raw_PREROUTING",
         BandwidthController::LOCAL_RAW_PREROUTING,
         IdletimerController::LOCAL_RAW_PREROUTING,
         NULL,
@@ -229,6 +230,9 @@ CommandListener::CommandListener() :
                  "-j", "DROP", NULL);
 
     execIptables(V4V6, "-w", "-A", "cfw_FORWARD", "-m", "state", "--state", "INVALID",
+                 "-j", "DROP", NULL);
+
+    execIptables(V4V6, "-w", "-t", "raw", "-A", "cfw_raw_PREROUTING", "-m", "rpfilter", "--invert", "--loose",
                  "-j", "DROP", NULL);
 
     // Let each module setup their child chains
